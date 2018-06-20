@@ -13,15 +13,10 @@
     <% if (!context.currentProvider) { %>
         <% if (context.providers.length > 0 || context.hasSecondaryProviders) { %>
             <div class="login-providers">
-                <div class="section-title lines">
-                    <h3>
-                        <span class="text"><%- gettext("Create an account using") %></span>
-                    </h3>
-                </div>
                 <%
                 _.each( context.providers, function( provider) {
-                    if ( provider.registerUrl ) { %>
-                        <button type="button" class="button button-primary button-<%- provider.id %> login-provider register-<%- provider.id %>" data-provider-url="<%- provider.registerUrl %>">
+                    if ( provider.loginUrl ) { %>
+                        <button type="button" class="button button-primary button-<%- provider.id %> login-provider login-<%- provider.id %>" data-provider-url="<%- provider.loginUrl %>">
                             <div class="icon <% if ( provider.iconClass ) { %>fa <%- provider.iconClass %><% } %>" aria-hidden="true">
                                 <% if ( provider.iconImage ) { %>
                                     <img class="icon-image" src="<%- provider.iconImage %>" alt="<%- provider.name %> icon" />
@@ -39,15 +34,6 @@
                     </button>
                 <% } %>
             </div>
-            <div class="section-title lines">
-                <h3>
-                    <span class="text"><%- gettext("or create a new one here") %></span>
-                </h3>
-            </div>
         <% } %>
     <% } %>
-
-    <%= context.fields %>
-
-    <button type="submit" class="action action-primary action-update js-register register-button"><%- gettext("Create account") %></button>
 </form>

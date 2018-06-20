@@ -22,11 +22,9 @@ class PlecticaOAuth2Backend(BaseOAuth2):
     def auth_complete(self, *args, **kwargs):
         """Completes loging process, must return user instance"""
 
-        self.strategy.session_set('{}_state'.format(self.name),
-                                  self.data.get('state'))
+        self.strategy.session_set('{}_state'.format(self.name), self.data.get('state'))
         next_url = '/'
         self.strategy.session.setdefault('next', next_url)
-
         return super(PlecticaOAuth2Backend, self).auth_complete(*args, **kwargs)
 
 
@@ -44,6 +42,8 @@ class PlecticaOAuth2Backend(BaseOAuth2):
         new_pipeline = self.strategy.get_pipeline(self)[:]
         insert_index = pipeline.index('third_party_auth.pipeline.ensure_user_information')
         new_pipeline.insert(insert_index, 'plectica_oauth_provider.pipeline.ensure_user_information')
+
+        self.strategy.session.setdefault('auth_entry', 'login')
 
         return super(PlecticaOAuth2Backend, self).pipeline(
             pipeline=new_pipeline, *args, **kwargs

@@ -10,7 +10,7 @@ from social_django.models import UserSocialAuth
 from social_core.pipeline import partial
 
 from student.views import create_account_with_params, reactivation_email_for_user
-from student.models import UserProfile, CourseAccessRole
+from student.models import UserProfile, CourseAccessRole, CourseEnrollment
 from student.roles import (
     CourseInstructorRole, CourseStaffRole, GlobalStaff, OrgStaffRole,
     UserBasedRole, CourseCreatorRole, CourseBetaTesterRole, OrgInstructorRole,
@@ -20,6 +20,7 @@ from third_party_auth.pipeline import (
     make_random_password, AuthEntryError, redirect_to_custom_form, AUTH_ENTRY_LOGIN, AUTH_ENTRY_REGISTER,
     AUTH_ENTRY_ACCOUNT_SETTINGS, AUTH_ENTRY_LOGIN_API, AUTH_ENTRY_REGISTER_API, AUTH_ENTRY_CUSTOM
 )
+from opaque_keys.edx.locations import SlashSeparatedCourseKey
 
 
 import logging
@@ -72,6 +73,13 @@ def ensure_user_information(
             user.last_name = data['last_name']
             user.is_active = True
             user.save()
+
+            try:
+                course_id = SlashSeparatedCourseKey.from_deprecated_string(data['course_id'])
+                CourseEnrollment.enroll(user, course_id)
+            except Exception as e:
+                logger.error('Handle error while enrolling user on course {}'.format(e))
+
             CourseCreator.objects.get_or_create(
                 user=user,
                 state=CourseCreator.UNREQUESTED

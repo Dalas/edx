@@ -331,26 +331,31 @@ class RegistrationView(APIView):
 
         # Handle duplicate email/username
         conflicts = check_account_exists(email=email, username=username)
-        if conflicts:
-            conflict_messages = {
-                "email": _(
-                    # Translators: This message is shown to users who attempt to create a new
-                    # account using an email address associated with an existing account.
-                    u"It looks like {email_address} belongs to an existing account. "
-                    u"Try again with a different email address."
-                ).format(email_address=email),
-                "username": _(
-                    # Translators: This message is shown to users who attempt to create a new
-                    # account using a username associated with an existing account.
-                    u"It looks like {username} belongs to an existing account. "
-                    u"Try again with a different username."
-                ).format(username=username),
-            }
-            errors = {
-                field: [{"user_message": conflict_messages[field]}]
-                for field in conflicts
-            }
-            return JsonResponse(errors, status=409)
+        # if conflicts:
+        #     conflict_messages = {
+        #         "email": _(
+        #             # Translators: This message is shown to users who attempt to create a new
+        #             # account using an email address associated with an existing account.
+        #             u"It looks like {email_address} belongs to an existing account. "
+        #             u"Try again with a different email address."
+        #         ).format(email_address=email),
+        #         "username": _(
+        #             # Translators: This message is shown to users who attempt to create a new
+        #             # account using a username associated with an existing account.
+        #             u"It looks like {username} belongs to an existing account. "
+        #             u"Try again with a different username."
+        #         ).format(username=username),
+        #     }
+        #     errors = {
+        #         field: [{"user_message": conflict_messages[field]}]
+        #         for field in conflicts
+        #     }
+        #     return JsonResponse(errors, status=409)
+
+        # TODO: dirty hack to disable registration
+        return JsonResponse({
+            'email': [{'user_message': 'Use Plectica oauth to register'}]
+        }, status=409)
 
         # Backwards compatibility: the student view expects both
         # terms of service and honor code values.  Since we're combining
